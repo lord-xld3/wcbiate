@@ -6,51 +6,67 @@ const { InjectManifest } = require('workbox-webpack-plugin');
 module.exports = () => {
   return {
     mode: 'development',
+    // Entry point for files
     entry: {
       main: './src/js/index.js',
       install: './src/js/install.js',
     },
+    // Output for our bundles
     output: {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
+      // Webpack plugin that generates our html file and injects our bundles. 
       new HtmlWebpackPlugin({
+        favicon: './favicon.ico',
         template: './index.html',
-        chunks: ['main'],
+        title: 'JATE'
       }),
+     
+      // Injects our custom service worker
+      new InjectManifest({
+        swSrc: './src-sw.js',
+        swDest: 'src-sw.js',
+      }),
+
+      // Creates a manifest.json file.
       new WebpackPwaManifest({
-        name: 'Your App Name',
-        short_name: 'App',
-        description: 'Your app description',
-        background_color: '#ffffff',
-        theme_color: '#000000',
+        fingerprints: false,
+        inject: true,
+        name: 'Just Another Text Editor',
+        short_name: 'JATE',
+        description: 'Never forget your contacts!',
+        background_color: '#225ca3',
+        theme_color: '#225ca3',
+        start_url: './',
+        publicPath: './',
         icons: [
           {
-            src: path.resolve('./favicon.ico'),
+            src: path.resolve('src/images/logo.png'),
             sizes: [96, 128, 192, 256, 384, 512],
             destination: path.join('assets', 'icons'),
           },
         ],
       }),
-      new InjectManifest({
-        swSrc: './src-sw.js',
-        exclude: [/\.map$/, /manifest\.json$/],
-      }),
     ],
+
     module: {
+      // CSS loaders
       rules: [
         {
-          test: /\.css$/,
+          test: /\.css$/i,
           use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.js$/,
+          test: /\.m?js$/,
           exclude: /node_modules/,
+          // We use babel-loader in order to use ES6.
           use: {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/transform-runtime'],
             },
           },
         },
