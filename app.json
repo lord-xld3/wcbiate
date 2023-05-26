@@ -1,0 +1,10 @@
+{
+    "buildpacks": [
+      {
+        "url": "https://github.com/lord-xld3/wcbiate"
+      },
+      {
+        "url": "heroku/nodejs"
+      }
+    ]
+  }
